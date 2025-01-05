@@ -1,0 +1,79 @@
+
+-- SOURCE CODE!!!!!! i think working with bugs, can run in mobile and pc
+-- Credits >> RedPupc1k
+-- shortened version >>>>> 
+
+
+
+local player = game.Players.LocalPlayer  
+local UserInputService = game:GetService("UserInputService")  
+
+
+local screenGui = Instance.new("ScreenGui")  
+local noclipButton = Instance.new("TextButton")  
+local uiCorner = Instance.new("UICorner")  
+
+screenGui.Parent = game.CoreGui
+noclipButton.Size = UDim2.new(0, 100, 0, 40)
+noclipButton.Position = UDim2.new(1, -110, 0, 100)  
+noclipButton.BackgroundColor3 = Color3.new(0, 0, 0) 
+noclipButton.Text = "Noclip: Выключен"  
+noclipButton.TextColor3 = Color3.new
+noclipButton.Parent = screenGui  
+
+uiCorner.Parent = noclipButton 
+
+local noclipEnabled = false  
+
+
+local function toggleNoclip()  
+    noclipEnabled = not noclipEnabled  
+    noclipButton.Text = noclipEnabled and "Noclip: On" or "Noclip: Off"  
+
+    while noclipEnabled do  
+        for _, part in pairs(player.Character:GetChildren()) do  
+            if part:IsA("BasePart") then  
+                part.CanCollide = false  
+            end  
+        end  
+        wait()  
+    end  
+
+    for _, part in pairs(player.Character:GetChildren()) do  
+        if part:IsA("BasePart") then  
+            part.CanCollide = true  
+        end  
+    end  
+end  
+
+noclipButton.MouseButton1Click:Connect(toggleNoclip)  
+
+UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)  
+    if not gameProcessedEvent and input.KeyCode == Enum.KeyCode.N then  
+        toggleNoclip()  
+    end  
+end)  
+
+
+local dragging, dragStart, startPos  
+
+noclipButton.InputBegan:Connect(function(input)  
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then  
+        dragging = true  
+        dragStart = input.Position  
+        startPos = noclipButton.Position  
+
+        input.Changed:Connect(function()  
+            if input.UserInputState == Enum.UserInputState.End then  
+                dragging = false  
+            end  
+        end)  
+    end  
+end)  
+
+UserInputService.InputChanged:Connect(function(input)  
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then  
+        local delta = input.Position - dragStart  
+        noclipButton.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)  
+    end  
+end)
